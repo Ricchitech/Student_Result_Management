@@ -1,0 +1,915 @@
+Private Sub Form_Load()
+Timer1.Enabled = True
+Me.Left = (Screen.Width - Me.Width) / 2
+Me.Top = (Screen.Height - Me.Height) / 2
+End Sub
+
+
+Private Sub Timer1_Timer()
+ProgressBar1.Value = ProgressBar1.Value + 4
+If (ProgressBar1.Value = ProgressBar1.Max) Then
+Timer1.Enabled = False
+Form2.Show
+Unload Me
+End If
+End Sub
+
+Private Sub logincmd_Click()
+If txtUser = "" Or txtPass = "" Then
+MsgBox "Please Enter Details"
+txtUser.SetFocus
+Exit Sub
+End If
+User = txtUser.Text
+PASS = txtPass.Text
+Adodc1.RecordSource = "select * from Login where Username = '" + User + "' and Password = '" + PASS + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox " Login Failed"
+txtUser.Text = ""
+txtPass.Text = ""
+Else
+MsgBox "Login Successfull"
+Form3.Show
+Form2.Hide
+Unload Me
+Exit Sub
+End If
+End Sub
+
+Private Sub mnuend_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Private Sub mnuhm_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Dim pic As String
+Dim grd As String
+Dim res As String
+Dim perc As Integer
+Dim Total As Integer
+
+Private Sub cmdsrch_Click()
+Command4.Visible = False
+Command5.Visible = False
+Command6.Visible = False
+Command7.Visible = False
+End Sub
+
+Private Sub Command1_Click()
+Command4.Visible = True
+Command5.Visible = True
+Command6.Visible = True
+Command7.Visible = True
+End Sub
+
+Private Sub Command2_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Private Sub Command3_Click()
+Unload Me
+End Sub
+
+Private Sub cmdcheck_Click()
+Adodc1.RecordSource = "select * from Result where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox "Invalid Register Number / Data Not Found"
+ElseIf Adodc1.Recordset.RecordCount = 1 Then
+Image1.Visible = True
+Text2 = Adodc1.Recordset("Studname")
+Text3 = Adodc1.Recordset("Course")
+Text4 = Adodc1.Recordset("Scheme")
+Combo1 = Adodc1.Recordset("Semester")
+Combo2 = Adodc1.Recordset("MonthnYear")
+Text5 = Adodc1.Recordset("Lang1")
+Text6 = Adodc1.Recordset("Lang2")
+Text7 = Adodc1.Recordset("Sub1")
+Text8 = Adodc1.Recordset("Sub2")
+Text9 = Adodc1.Recordset("Sub3")
+Text10 = Adodc1.Recordset("Sub4")
+pic = Adodc1.Recordset("Photo")
+Image1.Picture = LoadPicture(pic)
+cmdsave.Visible = True
+End If
+End Sub
+
+Private Sub cmdsave_Click()
+If Text1.Text = "" Or Text2.Text = "" Or Text3.Text = "" Or Text4.Text = "" Or Text5.Text = "" Or Text6.Text = "" Or Text7.Text = "" Or Text8.Text = "" Or Text9.Text = "" Or Text10.Text = "" Or Combo1.Text = "" Or Combo2.Text = "" Then
+MsgBox "Enter Correct Details"
+Else
+Adodc1.Refresh
+With Adodc1.Recordset
+Adodc1.RecordSource = "select * from Result where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+Adodc1.Recordset.Fields("Regno").Value = Text1.Text
+Adodc1.Recordset.Fields("Studname").Value = Text2.Text
+Adodc1.Recordset.Fields("Course").Value = Text3.Text
+Adodc1.Recordset.Fields("Scheme").Value = Text4.Text
+Adodc1.Recordset.Fields("Semester").Value = Combo1.Text
+Adodc1.Recordset.Fields("MonthnYear").Value = Combo2.Text
+Adodc1.Recordset.Fields("Lang1").Value = Text5.Text
+Adodc1.Recordset.Fields("Lang2").Value = Text6.Text
+Adodc1.Recordset.Fields("Sub1").Value = Text7.Text
+Adodc1.Recordset.Fields("Sub2").Value = Text8.Text
+Adodc1.Recordset.Fields("Sub3").Value = Text9.Text
+Adodc1.Recordset.Fields("Sub4").Value = Text10.Text
+Adodc1.Recordset.Fields("Photo").Value = pic
+Total = Val(Text5) + Val(Text6) + Val(Text7) + Val(Text8) + Val(Text9) + Val(Text10)
+perc = (Total / 600) * 100
+If perc >= 80 Then
+grd = "First Class Distinction"
+ElseIf perc >= 60 And perc < 80 Then
+grd = "First Class"
+ElseIf perc >= 50 And perc < 60 Then
+grd = "Second Class"
+ElseIf perc >= 35 And perc < 50 Then
+grd = "Pass Class"
+Else
+grd = "Fail"
+End If
+If Val(Text5) < 30 Or Val(Text6) < 30 Or Val(Text7) < 30 Or Val(Text8) < 30 Or Val(Text9) < 30 Or Val(Text10) < 30 Then
+res = "Fail"
+Else
+res = "Pass"
+End If
+Adodc1.Recordset.Fields("Percentage").Value = perc
+Adodc1.Recordset.Fields("Grade").Value = grd
+Adodc1.Recordset.Fields("Res").Value = res
+Adodc1.Recordset.Update
+MsgBox "Data Updated"
+Text1.Text = ""
+Text2.Text = ""
+Text3.Text = ""
+Text4.Text = ""
+Text5.Text = ""
+Text6.Text = ""
+Text7.Text = ""
+Text8.Text = ""
+Text9.Text = ""
+Text10.Text = ""
+Combo1.Text = ""
+Combo2.Text = ""
+Image1.Visible = False
+
+Exit Sub
+End With
+End If
+End Sub
+
+Private Sub Form_Load()
+cmdsave.Visible = False
+Combo1.AddItem "I Semester"
+Combo1.AddItem "II Semester"
+Combo1.AddItem "III Semester"
+Combo1.AddItem "IV Semester"
+Combo1.AddItem "V Semester"
+Combo1.AddItem "VI Semester"
+Combo1.AddItem "VII Semester"
+Combo1.AddItem "VIII Semester"
+Combo2.AddItem "May/2020"
+Combo2.AddItem "June/2020"
+Combo2.AddItem "Nov/2020"
+Combo2.AddItem "Dec/2020"
+Combo2.AddItem "May/2021"
+Combo2.AddItem "June/2021"
+Combo2.AddItem "Nov/2021"
+Combo2.AddItem "Dec/2021"
+Combo2.AddItem "May/2022"
+Combo2.AddItem "June/2022"
+Combo2.AddItem "Nov/2022"
+Combo2.AddItem "Dec/2022"
+Combo2.AddItem "May/2023"
+Combo2.AddItem "June/2023"
+Combo2.AddItem "Nov/2023"
+Combo2.AddItem "Dec/2023"
+Combo2.AddItem "May/2024"
+Combo2.AddItem "June/2024"
+Combo2.AddItem "Nov/2024"
+Combo2.AddItem "Dec/2024"
+Combo2.AddItem "May/2025"
+Combo2.AddItem "June/2025"
+Combo2.AddItem "Nov/2025"
+Combo2.AddItem "Dec/2025"
+End Sub
+
+Private Sub mnuhm_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Dim pic As String
+Dim grd As String
+Dim res As String
+Dim perc As String
+Dim Total As Integer
+
+Private Sub cmdcheck_Click()
+If Text1.Text = "" Then
+MsgBox "Enter Register Number"
+Else
+Adodc2.RecordSource = "select * from Result where Regno = '" + Text1.Text + "'"
+Adodc2.Refresh
+If Adodc2.Recordset.RecordCount = 1 Then
+MsgBox "Student Score Already Existed", vbInformation
+Else
+Adodc1.RecordSource = "select * from Student where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox "Invalid Register Number / Data Not Found"
+ElseIf Adodc1.Recordset.RecordCount = 1 Then
+Image1.Visible = True
+Text2 = Adodc1.Recordset("Studname")
+Text3 = Adodc1.Recordset("Course")
+Text4 = Adodc1.Recordset("Scheme")
+pic = Adodc1.Recordset("Photo")
+Image1.Picture = LoadPicture(pic)
+cmdsave.Visible = True
+End If
+End If
+End If
+End Sub
+
+Private Sub cmdsave_Click()
+If Text1.Text = "" Or Text2.Text = "" Or Text3.Text = "" Or Text4.Text = "" Or Text5.Text = "" Or Text6.Text = "" Or Text7.Text = "" Or Text8.Text = "" Or Text9.Text = "" Or Text10.Text = "" Or Combo1.Text = "" Or Combo2.Text = "" Then
+MsgBox "Enter Correct Details"
+Else
+Adodc2.RecordSource = "select * from Result where Regno = '" + Text1.Text + "'"
+Adodc2.Refresh
+If Adodc2.Recordset.RecordCount = 0 Then
+With Adodc2.Recordset
+Adodc2.Recordset.AddNew
+Adodc2.Recordset.Fields("Regno").Value = Text1.Text
+Adodc2.Recordset.Fields("Studname").Value = Text2.Text
+Adodc2.Recordset.Fields("Course").Value = Text3.Text
+Adodc2.Recordset.Fields("Scheme").Value = Text4.Text
+Adodc2.Recordset.Fields("Semester").Value = Combo1.Text
+Adodc2.Recordset.Fields("MonthnYear").Value = Combo2.Text
+Adodc2.Recordset.Fields("Lang1").Value = Text5.Text
+Adodc2.Recordset.Fields("Lang2").Value = Text6.Text
+Adodc2.Recordset.Fields("Sub1").Value = Text7.Text
+Adodc2.Recordset.Fields("Sub2").Value = Text8.Text
+Adodc2.Recordset.Fields("Sub3").Value = Text9.Text
+Adodc2.Recordset.Fields("Sub4").Value = Text10.Text
+Adodc2.Recordset.Fields("Photo").Value = pic
+Total = Val(Text5) + Val(Text6) + Val(Text7) + Val(Text8) + Val(Text9) + Val(Text10)
+perc = (Total / 600) * 100
+If perc >= 80 Then
+grd = "First Class Distinction"
+ElseIf perc >= 60 And perc < 80 Then
+grd = "First Class"
+ElseIf perc >= 50 And perc < 60 Then
+grd = "Second Class"
+ElseIf perc >= 35 And perc < 50 Then
+grd = "Pass Class"
+Else
+grd = "Fail"
+End If
+If Val(Text5) < 30 Or Val(Text6) < 30 Or Val(Text7) < 30 Or Val(Text8) < 30 Or Val(Text9) < 30 Or Val(Text10) < 30 Then
+res = "FAIL"
+Else
+res = "PASS"
+End If
+Adodc2.Recordset.Fields("Percentage").Value = perc
+Adodc2.Recordset.Fields("Grade").Value = grd
+Adodc2.Recordset.Fields("Res").Value = res
+Adodc2.Recordset.Update
+MsgBox "Data Updated"
+Text1.Text = ""
+Text2.Text = ""
+Text3.Text = ""
+Text4.Text = ""
+Text5.Text = ""
+Text6.Text = ""
+Text7.Text = ""
+Text8.Text = ""
+Text9.Text = ""
+Text10.Text = ""
+Combo1.Text = ""
+Combo2.Text = ""
+Image1.Visible = False
+End With
+ElseIf Adodc2.Recordset.RecordCount = 1 Then
+MsgBox "Student Score Already Existed", vbInformation
+End If
+End If
+End Sub
+
+
+Private Sub Form_Load()
+cmdsave.Visible = False
+Combo1.AddItem "I Semester"
+Combo1.AddItem "II Semester"
+Combo1.AddItem "III Semester"
+Combo1.AddItem "IV Semester"
+Combo1.AddItem "V Semester"
+Combo1.AddItem "VI Semester"
+Combo1.AddItem "VII Semester"
+Combo1.AddItem "VIII Semester"
+Combo2.AddItem "May/2020"
+Combo2.AddItem "June/2020"
+Combo2.AddItem "Nov/2020"
+Combo2.AddItem "Dec/2020"
+Combo2.AddItem "May/2021"
+Combo2.AddItem "June/2021"
+Combo2.AddItem "Nov/2021"
+Combo2.AddItem "Dec/2021"
+Combo2.AddItem "May/2022"
+Combo2.AddItem "June/2022"
+Combo2.AddItem "Nov/2022"
+Combo2.AddItem "Dec/2022"
+Combo2.AddItem "May/2023"
+Combo2.AddItem "June/2023"
+Combo2.AddItem "Nov/2023"
+Combo2.AddItem "Dec/2023"
+Combo2.AddItem "May/2024"
+Combo2.AddItem "June/2024"
+Combo2.AddItem "Nov/2024"
+Combo2.AddItem "Dec/2024"
+Combo2.AddItem "May/2025"
+Combo2.AddItem "June/2025"
+Combo2.AddItem "Nov/2025"
+Combo2.AddItem "Dec/2025"
+End Sub
+
+Private Sub mnuhm_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Dim pic As String
+
+Private Sub cmdsave_Click()
+If Text1.Text = "" Or Text2.Text = "" Or Combo1.Text = "" Or Combo2.Text = "" Then
+ MsgBox "Enter Correct Details"
+ Else
+Adodc1.Recordset.AddNew
+Adodc1.Recordset.Fields("Regno").Value = Text1.Text
+Adodc1.Recordset.Fields("Studname").Value = Text2.Text
+Adodc1.Recordset.Fields("Course").Value = Combo1.Text
+Adodc1.Recordset.Fields("Scheme").Value = Combo2.Text
+Adodc1.Recordset.Fields("DOB").Value = DTPicker1.Value
+Adodc1.Recordset.Fields("Photo").Value = pic
+Adodc1.Recordset.Update
+ MsgBox "Updated"
+ Image1.Visible = False
+ cmdsave.Visible = False
+uploadbtn.Visible = False
+Text1.Text = ""
+Text2.Text = ""
+Combo1.Text = ""
+Combo2.Text = ""
+ End If
+End Sub
+
+Private Sub Combo2_Click()
+uploadbtn.Visible = True
+End Sub
+
+Private Sub Form_Load()
+cmdsave.Visible = False
+uploadbtn.Visible = False
+Combo1.AddItem "BA-HEP"
+Combo1.AddItem "BSC-PMCs"
+Combo1.AddItem "BCOM"
+Combo1.AddItem "BBA"
+Combo1.AddItem "BCA"
+Combo1.AddItem "BSC-CBZ"
+Combo1.AddItem "BSC-PCM"
+Combo1.AddItem "BA-HES"
+Combo1.AddItem "BA-HEJ"
+Combo1.AddItem "BA-HEK"
+Combo2.AddItem "CBCS"
+End Sub
+
+Private Sub mnuhome_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Private Sub uploadbtn_Click()
+Image1.Visible = True
+Cd1.ShowOpen
+Cd1.Filter = "Jpeg|*.jpg"
+pic = Cd1.FileName
+Image1.Picture = LoadPicture(pic)
+cmdsave.Visible = True
+End Sub
+
+
+Private Sub menuaddnew_Click()
+Form6.Show
+Unload Me
+End Sub
+
+Private Sub menulg_Click()
+Form2.Show
+Unload Me
+End Sub
+
+Private Sub menurep_Click()
+Form8.Show
+Unload Me
+End Sub
+
+Private Sub menuupdateres_Click()
+Form7.Show
+Unload Me
+End Sub
+
+Private Sub mexit_Click()
+End
+End Sub
+
+Private Sub mnumod_Click()
+Form5.Show
+Unload Me
+End Sub
+
+Private Sub mnunew_Click()
+Form4.Show
+Unload Me
+End Sub
+
+
+
+Private Sub findbtn_Click()
+Dim pic As String
+Adodc1.RecordSource = "select * from Result where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox "Invalid Register Number / Data Not Found"
+ElseIf Adodc1.Recordset.RecordCount = 1 Then
+Frame2.Visible = True
+Frame3.Visible = True
+Image1.Visible = True
+Label4 = Adodc1.Recordset("Regno")
+Label5 = Adodc1.Recordset("Studname")
+Label10 = Adodc1.Recordset("Course")
+Label11 = Adodc1.Recordset("Semester")
+Label12 = Adodc1.Recordset("Scheme")
+Label13 = Adodc1.Recordset("MonthnYear")
+Label26 = Adodc1.Recordset("Lang1")
+Label27 = Adodc1.Recordset("Lang2")
+Label28 = Adodc1.Recordset("Sub1")
+Label29 = Adodc1.Recordset("Sub2")
+Label30 = Adodc1.Recordset("Sub3")
+Label31 = Adodc1.Recordset("Sub4")
+perce = Adodc1.Recordset("Percentage")
+Label40.Caption = perce + " % "
+Label41 = Adodc1.Recordset("Grade")
+Label42 = Adodc1.Recordset("Res")
+pic = Adodc1.Recordset("Photo")
+Image1.Picture = LoadPicture(pic)
+If Val(Label26) < 30 Then
+Label34.Caption = "F"
+Label34.ForeColor = &HFF&
+Else
+Label34.Caption = "P"
+Label34.ForeColor = &H8000&
+End If
+If Val(Label27) < 30 Then
+Label35.Caption = "F"
+Label35.ForeColor = &HFF&
+Else
+Label35.Caption = "P"
+Label35.ForeColor = &H8000&
+End If
+If Val(Label28) < 30 Then
+Label36.Caption = "F"
+Label36.ForeColor = &HFF&
+Else
+Label36.Caption = "P"
+Label36.ForeColor = &H8000&
+End If
+If Val(Label29) < 30 Then
+Label37.Caption = "F"
+Label37.ForeColor = &HFF&
+Else
+Label37.Caption = "P"
+Label37.ForeColor = &H8000&
+End If
+If Val(Label30) < 30 Then
+Label38.Caption = "F"
+Label38.ForeColor = &HFF&
+Else
+Label38.Caption = "P"
+Label38.ForeColor = &H8000&
+End If
+If Val(Label31) < 30 Then
+Label39.Caption = "F"
+Label39.ForeColor = &HFF&
+Else
+Label39.Caption = "P"
+Label39.ForeColor = &H8000&
+End If
+If Label42.Caption = "FAIL" Then
+Label41.Caption = "FAIL"
+Label41.ForeColor = &HFF&
+Label42.ForeColor = &HFF&
+Else
+Label42.ForeColor = &H8000&
+End If
+If Label10.Caption = "BA-HEP" Then
+Label17.Caption = "History"
+Label18.Caption = "Economics"
+Label19.Caption = "Politics"
+ElseIf Label10.Caption = "BA-HES" Then
+Label17.Caption = "History"
+Label18.Caption = "Economics"
+Label19.Caption = "Socialogy"
+ElseIf Label10.Caption = "BA-HEK" Then
+Label17.Caption = "History"
+Label18.Caption = "Economics"
+Label19.Caption = "Opt. Kannada"
+ElseIf Label10.Caption = "BA-HEJ" Then
+Label17.Caption = "History"
+Label18.Caption = "Economics"
+Label19.Caption = "Journolism"
+ElseIf Label10.Caption = "BSC-PMCs" Then
+Label17.Caption = "Physics"
+Label18.Caption = "Mathematics"
+Label19.Caption = "Comp. Science"
+ElseIf Label10.Caption = "BCOM" Then
+Label17.Caption = "Subject 1"
+Label18.Caption = "Subject 2"
+Label19.Caption = "Subject 3"
+ElseIf Label10.Caption = "BBA" Then
+Label17.Caption = "Subject 1"
+Label18.Caption = "Subject 2"
+Label19.Caption = "Subject 3"
+ElseIf Label10.Caption = "BCA" Then
+Label17.Caption = "Comp. Science 1"
+Label18.Caption = "Comp. Science 2"
+Label19.Caption = "Comp. Science 3"
+ElseIf Label10.Caption = "BSC-PCM" Then
+Label17.Caption = "Physics"
+Label18.Caption = "Chemistry"
+Label19.Caption = "MAthematics"
+ElseIf Label10.Caption = "BSC-CBZ" Then
+Label17.Caption = "Chemistry"
+Label18.Caption = "Botany"
+Label19.Caption = "Zoology"
+End If
+End If
+End Sub
+
+Private Sub Form_Load()
+Frame1.Visible = False
+Frame2.Visible = False
+Frame3.Visible = False
+End Sub
+
+
+
+Private Sub mnuadmin_Click()
+Form9.Show
+End Sub
+
+Private Sub mnuclose_Click()
+End
+End Sub
+
+Private Sub mnures_Click()
+Frame1.Visible = True
+
+End Sub
+
+
+
+Private Sub findbtn_Click()
+Dim pic As String
+Adodc1.RecordSource = "select * from Result where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox "Invalid Register Number / Data Not Found"
+ElseIf Adodc1.Recordset.RecordCount = 1 Then
+Frame2.Visible = True
+Frame3.Visible = True
+Image1.Visible = True
+Label4 = Adodc1.Recordset("Regno")
+Label5 = Adodc1.Recordset("Studname")
+Label10 = Adodc1.Recordset("Course")
+Label11 = Adodc1.Recordset("Semester")
+Label12 = Adodc1.Recordset("Scheme")
+Label13 = Adodc1.Recordset("MonthnYear")
+Label26 = Adodc1.Recordset("Lang1")
+Label27 = Adodc1.Recordset("Lang2")
+Label28 = Adodc1.Recordset("Sub1")
+Label29 = Adodc1.Recordset("Sub2")
+Label30 = Adodc1.Recordset("Sub3")
+Label31 = Adodc1.Recordset("Sub4")
+perce = Adodc1.Recordset("Percentage")
+Label40.Caption = perce + " % "
+Label41 = Adodc1.Recordset("Grade")
+Label42 = Adodc1.Recordset("Res")
+pic = Adodc1.Recordset("Photo")
+Image1.Picture = LoadPicture(pic)
+If Val(Label26) < 30 Then
+Label34.Caption = "F"
+Label34.ForeColor = &HFF&
+Else
+Label34.Caption = "P"
+Label34.ForeColor = &H8000&
+End If
+If Val(Label27) < 30 Then
+Label35.Caption = "F"
+Label35.ForeColor = &HFF&
+Else
+Label35.Caption = "P"
+Label35.ForeColor = &H8000&
+End If
+If Val(Label28) < 30 Then
+Label36.Caption = "F"
+Label36.ForeColor = &HFF&
+Else
+Label36.Caption = "P"
+Label36.ForeColor = &H8000&
+End If
+If Val(Label29) < 30 Then
+Label37.Caption = "F"
+Label37.ForeColor = &HFF&
+Else
+Label37.Caption = "P"
+Label37.ForeColor = &H8000&
+End If
+If Val(Label30) < 30 Then
+Label38.Caption = "F"
+Label38.ForeColor = &HFF&
+Else
+Label38.Caption = "P"
+Label38.ForeColor = &H8000&
+End If
+If Val(Label31) < 30 Then
+Label39.Caption = "F"
+Label39.ForeColor = &HFF&
+Else
+Label39.Caption = "P"
+Label39.ForeColor = &H8000&
+End If
+If Label42.Caption = "FAIL" Then
+Label41.Caption = "FAIL"
+Label41.ForeColor = &HFF&
+Label42.ForeColor = &HFF&
+Else
+Label42.ForeColor = &H8000&
+End If
+If Label10.Caption = "BA-HEP" Then
+Label17.Caption = "History"
+Label18.Caption = "Economics"
+Label19.Caption = "Politics"
+ElseIf Label10.Caption = "BA-HES" Then
+Label17.Caption = "History"
+Label18.Caption = "Economics"
+Label19.Caption = "Socialogy"
+ElseIf Label10.Caption = "BA-HEK" Then
+Label17.Caption = "History"
+Label18.Caption = "Economics"
+Label19.Caption = "Opt. Kannada"
+ElseIf Label10.Caption = "BA-HEJ" Then
+Label17.Caption = "History"
+Label18.Caption = "Economics"
+Label19.Caption = "Journolism"
+ElseIf Label10.Caption = "BSC-PMCs" Then
+Label17.Caption = "Physics"
+Label18.Caption = "Mathematics"
+Label19.Caption = "Comp. Science"
+ElseIf Label10.Caption = "BCOM" Then
+Label17.Caption = "Subject 1"
+Label18.Caption = "Subject 2"
+Label19.Caption = "Subject 3"
+ElseIf Label10.Caption = "BBA" Then
+Label17.Caption = "Subject 1"
+Label18.Caption = "Subject 2"
+Label19.Caption = "Subject 3"
+ElseIf Label10.Caption = "BCA" Then
+Label17.Caption = "Comp. Science 1"
+Label18.Caption = "Comp. Science 2"
+Label19.Caption = "Comp. Science 3"
+ElseIf Label10.Caption = "BSC-PCM" Then
+Label17.Caption = "Physics"
+Label18.Caption = "Chemistry"
+Label19.Caption = "MAthematics"
+ElseIf Label10.Caption = "BSC-CBZ" Then
+Label17.Caption = "Chemistry"
+Label18.Caption = "Botany"
+Label19.Caption = "Zoology"
+End If
+End If
+End Sub
+
+Private Sub Form_Load()
+Frame1.Visible = False
+Frame2.Visible = False
+Frame3.Visible = False
+End Sub
+
+
+
+Private Sub mnuadmin_Click()
+Form9.Show
+End Sub
+
+Private Sub mnuclose_Click()
+End
+End Sub
+
+Private Sub mnures_Click()
+Frame1.Visible = True
+
+End Sub
+
+
+
+
+Private Sub logincmd_Click()
+If txtUser = "" Or Text1 = "" Or Text2 = "" Then
+MsgBox "Please Enter Details"
+txtUser.SetFocus
+Exit Sub
+End If
+If Text1.Text = Text2.Text Then
+Adodc1.RecordSource = "select * from Login"
+Adodc1.Refresh
+Adodc1.Recordset.AddNew
+Adodc1.Recordset.Fields("Username").Value = txtUser.Text
+Adodc1.Recordset.Fields("Password").Value = Text1.Text
+Adodc1.Recordset.Update
+MsgBox "User Added"
+txtUser.Text = ""
+Text1.Text = ""
+Text2.Text = ""
+Else
+MsgBox "Password Not Matched"
+Exit Sub
+End If
+End Sub
+
+Private Sub mnuhm_Click()
+Form3.Show
+Unload Me
+End Sub
+
+
+Dim pic As String
+Dim grd As String
+Dim res As String
+Dim perc As Integer
+Dim Total As Integer
+
+Private Sub cmdsrch_Click()
+Command4.Visible = False
+Command5.Visible = False
+Command6.Visible = False
+Command7.Visible = False
+End Sub
+
+Private Sub Command1_Click()
+Command4.Visible = True
+Command5.Visible = True
+Command6.Visible = True
+Command7.Visible = True
+End Sub
+
+Private Sub Command2_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Private Sub Command3_Click()
+Unload Me
+End Sub
+
+Private Sub cmdcheck_Click()
+Adodc1.RecordSource = "select * from Result where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox "Invalid Register Number / Data Not Found"
+ElseIf Adodc1.Recordset.RecordCount = 1 Then
+Image1.Visible = True
+Text2 = Adodc1.Recordset("Studname")
+Text3 = Adodc1.Recordset("Course")
+Text4 = Adodc1.Recordset("Scheme")
+Combo1 = Adodc1.Recordset("Semester")
+Combo2 = Adodc1.Recordset("MonthnYear")
+Text5 = Adodc1.Recordset("Lang1")
+Text6 = Adodc1.Recordset("Lang2")
+Text7 = Adodc1.Recordset("Sub1")
+Text8 = Adodc1.Recordset("Sub2")
+Text9 = Adodc1.Recordset("Sub3")
+Text10 = Adodc1.Recordset("Sub4")
+pic = Adodc1.Recordset("Photo")
+Image1.Picture = LoadPicture(pic)
+cmdsave.Visible = True
+End If
+End Sub
+
+Private Sub cmdsave_Click()
+If Text1.Text = "" Or Text2.Text = "" Or Text3.Text = "" Or Text4.Text = "" Or Text5.Text = "" Or Text6.Text = "" Or Text7.Text = "" Or Text8.Text = "" Or Text9.Text = "" Or Text10.Text = "" Or Combo1.Text = "" Or Combo2.Text = "" Then
+MsgBox "Enter Correct Details"
+Else
+Adodc1.Refresh
+With Adodc1.Recordset
+Adodc1.RecordSource = "select * from Result where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+Adodc1.Recordset.Fields("Regno").Value = Text1.Text
+Adodc1.Recordset.Fields("Studname").Value = Text2.Text
+Adodc1.Recordset.Fields("Course").Value = Text3.Text
+Adodc1.Recordset.Fields("Scheme").Value = Text4.Text
+Adodc1.Recordset.Fields("Semester").Value = Combo1.Text
+Adodc1.Recordset.Fields("MonthnYear").Value = Combo2.Text
+Adodc1.Recordset.Fields("Lang1").Value = Text5.Text
+Adodc1.Recordset.Fields("Lang2").Value = Text6.Text
+Adodc1.Recordset.Fields("Sub1").Value = Text7.Text
+Adodc1.Recordset.Fields("Sub2").Value = Text8.Text
+Adodc1.Recordset.Fields("Sub3").Value = Text9.Text
+Adodc1.Recordset.Fields("Sub4").Value = Text10.Text
+Adodc1.Recordset.Fields("Photo").Value = pic
+Total = Val(Text5) + Val(Text6) + Val(Text7) + Val(Text8) + Val(Text9) + Val(Text10)
+perc = (Total / 600) * 100
+If perc >= 80 Then
+grd = "First Class Distinction"
+ElseIf perc >= 60 And perc < 80 Then
+grd = "First Class"
+ElseIf perc >= 50 And perc < 60 Then
+grd = "Second Class"
+ElseIf perc >= 35 And perc < 50 Then
+grd = "Pass Class"
+Else
+grd = "Fail"
+End If
+If Val(Text5) < 30 Or Val(Text6) < 30 Or Val(Text7) < 30 Or Val(Text8) < 30 Or Val(Text9) < 30 Or Val(Text10) < 30 Then
+res = "Fail"
+Else
+res = "Pass"
+End If
+Adodc1.Recordset.Fields("Percentage").Value = perc
+Adodc1.Recordset.Fields("Grade").Value = grd
+Adodc1.Recordset.Fields("Res").Value = res
+Adodc1.Recordset.Update
+MsgBox "Data Updated"
+Text1.Text = ""
+Text2.Text = ""
+Text3.Text = ""
+Text4.Text = ""
+Text5.Text = ""
+Text6.Text = ""
+Text7.Text = ""
+Text8.Text = ""
+Text9.Text = ""
+Text10.Text = ""
+Combo1.Text = ""
+Combo2.Text = ""
+Image1.Visible = False
+
+Exit Sub
+End With
+End If
+End Sub
+
+Private Sub Form_Load()
+cmdsave.Visible = False
+Combo1.AddItem "I Semester"
+Combo1.AddItem "II Semester"
+Combo1.AddItem "III Semester"
+Combo1.AddItem "IV Semester"
+Combo1.AddItem "V Semester"
+Combo1.AddItem "VI Semester"
+Combo1.AddItem "VII Semester"
+Combo1.AddItem "VIII Semester"
+Combo2.AddItem "May/2020"
+Combo2.AddItem "June/2020"
+Combo2.AddItem "Nov/2020"
+Combo2.AddItem "Dec/2020"
+Combo2.AddItem "May/2021"
+Combo2.AddItem "June/2021"
+Combo2.AddItem "Nov/2021"
+Combo2.AddItem "Dec/2021"
+Combo2.AddItem "May/2022"
+Combo2.AddItem "June/2022"
+Combo2.AddItem "Nov/2022"
+Combo2.AddItem "Dec/2022"
+Combo2.AddItem "May/2023"
+Combo2.AddItem "June/2023"
+Combo2.AddItem "Nov/2023"
+Combo2.AddItem "Dec/2023"
+Combo2.AddItem "May/2024"
+Combo2.AddItem "June/2024"
+Combo2.AddItem "Nov/2024"
+Combo2.AddItem "Dec/2024"
+Combo2.AddItem "May/2025"
+Combo2.AddItem "June/2025"
+Combo2.AddItem "Nov/2025"
+Combo2.AddItem "Dec/2025"
+End Sub
+
+Private Sub mnuhm_Click()
+Form3.Show
+Unload Me
+End Sub
